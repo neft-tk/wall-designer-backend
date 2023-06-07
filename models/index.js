@@ -14,13 +14,13 @@ User.hasMany(Design,{
 Design.belongsTo(User);
 
 // A Design is comprised of tiles
-Design.belongsToMany(Tile, {
-    through: "DesignPattern"
-});
+// Design.belongsToMany(Tile, {
+//     through: "DesignPattern"
+// });
 
 // Tiles can belong to many designs
-Tile.belongsToMany(Design, {
-    through: "DesignPattern"
-});
+// Tile.belongsToMany(Design, {
+//     through: "DesignPattern"
+// });
 
 module.exports = { User, Design, Tile };

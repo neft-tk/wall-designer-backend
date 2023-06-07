@@ -8,9 +8,6 @@ async function getUsers(req, res) {
     const usersData = await User.findAll({
       include: [
         {
-          model: User,
-        },
-        {
           model: Design,
         },
       ],
@@ -29,9 +26,6 @@ async function getSingleUser(req, res) {
   try {
     const userData = await User.findByPk(req.params.userId, {
       include: [
-        {
-          model: User,
-        },
         {
           model: Design,
         },
