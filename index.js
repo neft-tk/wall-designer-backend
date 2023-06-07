@@ -1,28 +1,42 @@
+// Required Packages
 const express = require('express');
-const path = require('path');
-const api = require('./routes/index.js');
+const session = require('express-session');
+const http = require('http');
+const cors = require('cors')
+const routes = require('./routes');
+const exphbs = require('express-handlebars');
+const sequelize = require('./config/connection');
 
-const PORT = 3001;
-
+// Initialize some stuff
 const app = express();
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-// Middleware for parsing JSON and urlencoded form data
+// Use cors for cross origin requests
+app.use(cors());
+
+// Declare a port.
+const PORT = process.env.PORT || 3001;
+
+const sess = {
+  secret: process.env.SESSION_SECRET,
+  cookie: {
+    maxAge:1000*60*60*2
+  },
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: sequelize
+  })
+};
+
+// MIDDLEWARE
+app.use(express.static("public"))
+app.use(session(sess));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/api', api);
+app.use(routes);
 
-app.use(express.static('public'));
 
-// GET Route for homepage
-app.get('/', (req, res) =>
-  res.sendFile(path.join(__dirname, '/public/index.html'))
-);
-
-// GET Route for feedback page
-app.get('/feedback', (req, res) =>
-  res.sendFile(path.join(__dirname, '/public/pages/feedback.html'))
-);
-
-app.listen(PORT, () =>
- console.log(`App listening at http://localhost:PORT 🚀`)
-);
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log(`Now listening on port: ${PORT}`));
+});
